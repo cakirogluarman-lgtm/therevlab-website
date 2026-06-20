@@ -33,6 +33,14 @@
 html { scroll-behavior: smooth; background: #000; -webkit-text-size-adjust: 100%; }
 html, body { min-height: 100%; overflow-x: clip; max-width: 100vw; }
 
+/* iPhone notch / status-bar blend: fill the top safe area with solid black
+   so it matches the dark page + theme-color (no visible seam under the notch) */
+body::before {
+  content: ""; position: fixed; top: 0; left: 0; right: 0;
+  height: env(safe-area-inset-top, 0px);
+  background: #000; z-index: 9998; pointer-events: none;
+}
+
 body {
   font-family: var(--font);
   background:
