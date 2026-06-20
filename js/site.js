@@ -8,20 +8,20 @@
     var isMobile = window.matchMedia && window.matchMedia('(max-width:768px)').matches;
     function resize() { c.width = window.innerWidth; c.height = window.innerHeight; }
     resize(); window.addEventListener('resize', resize);
-    var COUNT = isMobile ? Math.min(22, Math.round(innerWidth / 32)) : Math.min(64, Math.round(innerWidth / 24));
+    var COUNT = isMobile ? Math.min(30, Math.round(innerWidth / 26)) : Math.min(90, Math.round(innerWidth / 18));
     for (var i = 0; i < COUNT; i++) {
       parts.push({
         x: Math.random() * innerWidth, y: Math.random() * innerHeight,
-        vx: (Math.random() - 0.5) * 0.18, vy: -0.08 - Math.random() * 0.22,
-        size: 0.6 + Math.random() * 1.6, alpha: 0.05 + Math.random() * 0.22,
-        pulse: Math.random() * Math.PI * 2, ps: 0.006 + Math.random() * 0.014
+        vx: (Math.random() - 0.5) * 0.22, vy: -0.10 - Math.random() * 0.28,
+        size: 1 + Math.random() * 2.2, alpha: 0.14 + Math.random() * 0.34,
+        pulse: Math.random() * Math.PI * 2, ps: 0.006 + Math.random() * 0.016
       });
     }
     function tick() {
       requestAnimationFrame(tick);
       if (document.hidden) return;
       ctx.clearRect(0, 0, c.width, c.height);
-      if (!isMobile) ctx.shadowBlur = 6;
+      if (!isMobile) ctx.shadowBlur = 9;
       for (var i = 0; i < parts.length; i++) {
         var p = parts[i];
         p.x += p.vx; p.y += p.vy; p.pulse += p.ps;
