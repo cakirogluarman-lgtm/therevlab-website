@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#000000" />
+  <meta name="description" content="Book a service with Revlab — PPF, color wraps and detailing in Boca Raton. Secure your spot online with a deposit." />
+  <title>Book — Revlab</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Sacramento&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/site.css?v=3">
+</head>
+<body>
+  <canvas id="rv-particles" aria-hidden="true"></canvas>
+  <div class="page-aurora" aria-hidden="true"><div class="pa1"></div><div class="pa2"></div></div>
+
+  <nav class="navbar">
+    <div class="nav-inner">
+      <a class="nav-logo" href="index.html"><img src="assets/revlab-logo.png" alt="Revlab"></a>
+      <div class="nav-links">
+        <span class="nav-ind" aria-hidden="true"></span>
+        <a href="index.html" class="nav-link" aria-label="Home"><svg viewBox="0 0 24 24"><path d="M3 10.5L12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/></svg></a>
+        <a href="services.html" class="nav-link" aria-label="Services"><svg viewBox="0 0 24 24"><path d="M12 3l7 3v6c0 4.2-3 7.5-7 9-4-1.5-7-4.8-7-9V6z"/><path d="M9 12l2 2 4-4"/></svg></a>
+        <a href="about.html" class="nav-link" aria-label="About"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11.5v4.5"/><circle cx="12" cy="7.8" r="1" fill="currentColor" stroke="none"/></svg></a>
+        <a href="book.html" class="nav-link nav-cta active" aria-label="Book"><svg viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="16" rx="2"/><path d="M3.5 9.5h17"/><path d="M8 3v4M16 3v4"/></svg></a>
+      </div>
+    </div>
+  </nav>
+
+  <main id="app-content">
+    <header class="page-head" style="padding-bottom:0;">
+      <div class="hero-aurora h1" style="opacity:.3;"></div>
+      <div class="section-label">Book a Service</div>
+      <h1>Reserve your <span class="grad">spot</span>.</h1>
+      <p>A few quick taps. Secure your booking with a deposit — applied to your final total.</p>
+    </header>
+
+    <section class="section" style="padding-top:48px;">
+      <div class="section-inner">
+        <div class="wizard" id="wiz">
+          <div class="wiz-progress" id="wiz-progress">
+            <div class="wiz-dot on"></div><div class="wiz-dot"></div><div class="wiz-dot"></div><div class="wiz-dot"></div>
+          </div>
+
+          <!-- STEP 0 — service -->
+          <div class="wiz-step on" data-step="0">
+            <div class="wiz-q">What are you booking?</div>
+            <div class="wiz-hint">Pick a service to begin.</div>
+            <div class="wiz-opts one" data-key="service">
+              <div class="wiz-opt" data-val="ppf"><h4>Paint Protection Film</h4><p>Self-healing protection · from $1,200</p></div>
+              <div class="wiz-opt" data-val="wrap"><h4>Color Change Wrap</h4><p>Full transformation in vinyl · from $2,500</p></div>
+              <div class="wiz-opt" data-val="detail"><h4>Detailing &amp; Ceramic</h4><p>Correction &amp; ceramic gloss · from $250</p></div>
+            </div>
+          </div>
+
+          <!-- STEP 1 — package -->
+          <div class="wiz-step" data-step="1">
+            <div class="wiz-q">Choose a package</div>
+            <div class="wiz-hint">Final quote confirmed after we see the car.</div>
+            <div class="wiz-opts" id="pkg-opts" data-key="pkg"></div>
+          </div>
+
+          <!-- STEP 2 — date & time -->
+          <div class="wiz-step" data-step="2">
+            <div class="wiz-q">Pick a date &amp; time</div>
+            <div class="bk-cal" id="bk-cal">
+              <div class="bk-cal-head">
+                <button class="bk-cal-btn" id="cal-prev" aria-label="Previous month">‹</button>
+                <div class="bk-cal-title" id="cal-title"></div>
+                <button class="bk-cal-btn" id="cal-next" aria-label="Next month">›</button>
+              </div>
+              <div class="bk-dow"><span>Su</span><span>Mo</span><span>Tu</span><span>We</span><span>Th</span><span>Fr</span><span>Sa</span></div>
+              <div class="bk-days" id="cal-days"></div>
+            </div>
+            <div style="margin-top:18px;">
+              <div class="bk-label">Drop-off time</div>
+              <div class="bk-times" id="bk-times"></div>
+            </div>
+            <div class="wiz-nav"><a class="btn btn-primary" id="next-2">Continue</a></div>
+            <div class="bk-error" id="err-2"></div>
+          </div>
+
+          <!-- STEP 3 — details + pay -->
+          <div class="wiz-step" data-step="3">
+            <div class="wiz-q">Deposit: <span id="bk-deposit" class="grad">$200</span></div>
+            <div class="wiz-hint" id="bk-breakdown">Secures your booking · applied to your total</div>
+            <div class="wiz-fields">
+              <input type="text" id="bk-name" placeholder="Your name" autocomplete="name">
+              <input type="email" id="bk-email" placeholder="Email" autocomplete="email">
+              <input type="tel" id="bk-phone" placeholder="Phone (optional)" autocomplete="tel">
+              <input type="text" id="bk-vehicle" placeholder="Vehicle — year / make / model">
+            </div>
+            <div class="wiz-nav"><a class="btn btn-primary" id="bk-pay">Book &amp; Pay Deposit</a></div>
+            <div class="bk-error" id="err-3"></div>
+            <p class="bk-note">Secure checkout via Stripe. We'll reach out to confirm the details.</p>
+          </div>
+
+          <div class="wiz-nav" id="back-wrap" style="display:none;"><button class="wiz-back" id="wiz-back">← Back</button></div>
+        </div>
+
+        <p style="text-align:center;margin-top:30px;"><a href="index.html" style="color:var(--text-muted);font-size:.85rem;">← Back to home</a></p>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-logo"><img src="assets/revlab-logo.png" alt="Revlab"></div>
+      <div class="footer-meta">© 2026 Revlab · PPF · Wraps · Detailing · Boca Raton, FL</div>
+      <div class="footer-social">
+        <a href="https://instagram.com/therevlab" target="_blank" rel="noopener">Instagram</a>
+        <a href="https://tiktok.com/@therevlab" target="_blank" rel="noopener">TikTok</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/site.js?v=4"></script>
+  <script>
+  (function () {
+    /* ── Pricing model (single source of truth; mirrored server-side) ── */
+    var SERVICES = {
+      ppf:   { label: 'Paint Protection Film', packages: [
+        { id: 'track',  name: 'Track / Partial Front', from: 1200, deposit: 200 },
+        { id: 'front',  name: 'Full Front',            from: 2400, deposit: 300 },
+        { id: 'body',   name: 'Full Body',             from: 6000, deposit: 500 }
+      ]},
+      wrap:  { label: 'Color Change Wrap', packages: [
+        { id: 'accents',name: 'Accents / Chrome Delete', from: 600,  deposit: 150 },
+        { id: 'full',   name: 'Full Color Change',       from: 2500, deposit: 300 },
+        { id: 'premium',name: 'Premium / Color Shift',   from: 3500, deposit: 400 }
+      ]},
+      detail:{ label: 'Detailing & Ceramic', packages: [
+        { id: 'signature', name: 'Signature Detail', from: 250, deposit: 75 },
+        { id: 'correction',name: 'Paint Correction', from: 600, deposit: 150 },
+        { id: 'ceramic',   name: 'Ceramic Coating',  from: 900, deposit: 200 }
+      ]}
+    };
+
+    var wiz = document.getElementById('wiz');
+    var steps = [].slice.call(wiz.querySelectorAll('.wiz-step'));
+    var dots = [].slice.call(wiz.querySelectorAll('#wiz-progress .wiz-dot'));
+    var backWrap = document.getElementById('back-wrap');
+    var bk = { service: '', pkg: '', date: '', time: '' };
+    var cur = 0;
+
+    function show(i) {
+      cur = i;
+      steps.forEach(function (s, k) { s.classList.toggle('on', k === i); });
+      dots.forEach(function (d, k) { d.classList.toggle('on', k <= i); });
+      backWrap.style.display = i > 0 ? 'flex' : 'none';
+      if (i === 3) updateDeposit();
+    }
+
+    /* Step 0 — service selection */
+    wiz.querySelector('[data-key="service"]').querySelectorAll('.wiz-opt').forEach(function (opt) {
+      opt.addEventListener('click', function () {
+        wiz.querySelectorAll('[data-key="service"] .wiz-opt').forEach(function (o) { o.classList.remove('sel'); });
+        opt.classList.add('sel');
+        bk.service = opt.getAttribute('data-val'); bk.pkg = '';
+        renderPackages();
+        setTimeout(function () { show(1); }, 360);
+      });
+    });
+
+    /* Step 1 — packages (dynamic) */
+    function renderPackages() {
+      var wrap = document.getElementById('pkg-opts');
+      wrap.innerHTML = '';
+      (SERVICES[bk.service].packages).forEach(function (p) {
+        var el = document.createElement('div');
+        el.className = 'wiz-opt';
+        el.innerHTML = '<h4></h4><p></p>';
+        el.querySelector('h4').textContent = p.name;
+        el.querySelector('p').textContent = 'From $' + p.from.toLocaleString() + ' · deposit $' + p.deposit;
+        el.addEventListener('click', function () {
+          wrap.querySelectorAll('.wiz-opt').forEach(function (o) { o.classList.remove('sel'); });
+          el.classList.add('sel');
+          bk.pkg = p.id;
+          setTimeout(function () { show(2); }, 360);
+        });
+        wrap.appendChild(el);
+      });
+    }
+
+    function currentPkg() {
+      var s = SERVICES[bk.service]; if (!s) return null;
+      for (var i = 0; i < s.packages.length; i++) if (s.packages[i].id === bk.pkg) return s.packages[i];
+      return null;
+    }
+
+    /* Step 2 — calendar */
+    var TIMES = ['9:00 AM', '12:00 PM', '3:00 PM'];
+    function renderTimes() {
+      var w = document.getElementById('bk-times'); w.innerHTML = '';
+      TIMES.forEach(function (t) {
+        var el = document.createElement('div');
+        el.className = 'bk-pill' + (bk.time === t ? ' sel' : '');
+        el.textContent = t;
+        el.addEventListener('click', function () { bk.time = t; renderTimes(); });
+        w.appendChild(el);
+      });
+    }
+    var view = new Date(); view.setDate(1);
+    var MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+    function ymd(d) { return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0'); }
+    function renderCal() {
+      document.getElementById('cal-title').textContent = MONTHS[view.getMonth()] + ' ' + view.getFullYear();
+      var days = document.getElementById('cal-days'); days.innerHTML = '';
+      var startDow = new Date(view).getDay();
+      var dim = new Date(view.getFullYear(), view.getMonth()+1, 0).getDate();
+      var minDate = new Date(); minDate.setHours(0,0,0,0); // all dates from today onward are open
+      for (var i = 0; i < startDow; i++) days.appendChild(document.createElement('div'));
+      for (var d = 1; d <= dim; d++) {
+        var el = document.createElement('div'); el.className = 'bk-day'; el.textContent = d;
+        var dt = new Date(view.getFullYear(), view.getMonth(), d);
+        if (dt < minDate) el.classList.add('off'); // only past dates disabled
+        else { var key = ymd(dt); if (bk.date === key) el.classList.add('sel');
+          (function (k) { el.addEventListener('click', function () { bk.date = k; renderCal(); }); })(key); }
+        days.appendChild(el);
+      }
+    }
+    document.getElementById('cal-prev').addEventListener('click', function () { view.setMonth(view.getMonth()-1); renderCal(); });
+    document.getElementById('cal-next').addEventListener('click', function () { view.setMonth(view.getMonth()+1); renderCal(); });
+    renderCal(); renderTimes();
+
+    document.getElementById('next-2').addEventListener('click', function () {
+      var err = document.getElementById('err-2');
+      if (!bk.date) { err.textContent = 'Pick a date first.'; err.style.display = 'block'; return; }
+      if (!bk.time) { err.textContent = 'Pick a drop-off time.'; err.style.display = 'block'; return; }
+      err.style.display = 'none'; show(3);
+    });
+
+    /* Step 3 — deposit + checkout */
+    function fmtDate(key) {
+      if (!key) return '';
+      var p = key.split('-'); var dt = new Date(p[0], p[1]-1, p[2]);
+      return dt.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+    }
+    function updateDeposit() {
+      var p = currentPkg(); if (!p) return;
+      document.getElementById('bk-deposit').textContent = '$' + p.deposit;
+      document.getElementById('bk-breakdown').textContent =
+        SERVICES[bk.service].label + ' · ' + p.name + ' · ' + fmtDate(bk.date) + (bk.time ? ' at ' + bk.time : '') + ' · deposit applied to $' + p.from.toLocaleString() + '+ total';
+    }
+
+    document.getElementById('wiz-back').addEventListener('click', function () { show(cur - 1); });
+
+    document.getElementById('bk-pay').addEventListener('click', function () {
+      var err = document.getElementById('err-3');
+      var name = document.getElementById('bk-name').value.trim();
+      var email = document.getElementById('bk-email').value.trim();
+      var vehicle = document.getElementById('bk-vehicle').value.trim();
+      if (!name || !email) { err.textContent = 'Name and email, please.'; err.style.display = 'block'; return; }
+      err.style.display = 'none';
+      var btn = this; btn.textContent = 'One sec…';
+      fetch('/api/checkout', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          service: bk.service, pkg: bk.pkg, date: bk.date, time: bk.time,
+          name: name, email: email, vehicle: vehicle,
+          phone: document.getElementById('bk-phone').value.trim()
+        })
+      }).then(function (r) { return r.json(); }).then(function (d) {
+        if (d && d.url) { window.location.href = d.url; }
+        else { throw new Error((d && d.error) || 'failed'); }
+      }).catch(function () {
+        btn.textContent = 'Book & Pay Deposit';
+        err.textContent = 'Checkout failed — try again, or reach us on the contact form.';
+        err.style.display = 'block';
+      });
+    });
+
+    /* Success toast after Stripe redirect */
+    if (location.search.indexOf('booked=1') !== -1) {
+      var t = document.createElement('div');
+      t.textContent = 'Booked! Check your email — we\'ll confirm the details shortly.';
+      t.style.cssText = 'position:fixed;left:50%;top:96px;transform:translateX(-50%);z-index:300;padding:14px 26px;border-radius:999px;background:rgba(143,244,216,0.12);border:1px solid rgba(143,244,216,0.4);color:#8FF4D8;font-weight:600;font-size:.95rem;backdrop-filter:blur(16px);';
+      document.body.appendChild(t);
+      setTimeout(function(){ t.style.transition='opacity 1s'; t.style.opacity='0'; }, 6000);
+      setTimeout(function(){ t.remove(); }, 7200);
+    }
+  })();
+  </script>
+</body>
+</html>
