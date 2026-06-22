@@ -179,6 +179,10 @@
           { id:'wash',      name:'Signature Wash & Detail',    from:300,  deposit:100 },
           { id:'oxidation', name:'Oxidation Removal & Polish', from:800,  deposit:200 },
           { id:'ceramic',   name:'Marine Ceramic Coating',     from:1200, deposit:300 } ]},
+        wrap:  { label: 'Color Change Wrap', packages: [
+          { id:'accents', name:'Accents & Striping',    from:800,  deposit:200 },
+          { id:'full',    name:'Full Hull Wrap',        from:4000, deposit:500 },
+          { id:'premium', name:'Premium / Custom Print', from:6000, deposit:700 } ]},
         ppf:   { label: 'Protective Film', packages: [
           { id:'hull', name:'Hull & High-wear Film', from:1500, deposit:300 } ]}
       }}
@@ -202,9 +206,9 @@
       if (i === 6) { updateDeposit(); setupPayment(); }
     }
 
-    /* Mobile service is not offered for automotive PPF or color-change wraps (in-shop only). */
+    /* Mobile service is not offered for automotive PPF (in-shop only). Marine PPF and all color-change wraps allow mobile. */
     function mobileAllowed() {
-      return !(bk.category === 'auto' && (bk.service === 'ppf' || bk.service === 'wrap'));
+      return !(bk.category === 'auto' && bk.service === 'ppf');
     }
     function configLocation() {
       var mobileOpt = wiz.querySelector('[data-key="place"] .wiz-opt[data-val="mobile"]');

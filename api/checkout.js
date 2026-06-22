@@ -32,6 +32,10 @@ const CATALOG = {
         wash:      { name: 'Signature Wash & Detail',    from: 300,  deposit: 100 },
         oxidation: { name: 'Oxidation Removal & Polish', from: 800,  deposit: 200 },
         ceramic:   { name: 'Marine Ceramic Coating',     from: 1200, deposit: 300 } } },
+      wrap: { label: 'Color Change Wrap', packages: {
+        accents: { name: 'Accents & Striping',     from: 800,  deposit: 200 },
+        full:    { name: 'Full Hull Wrap',         from: 4000, deposit: 500 },
+        premium: { name: 'Premium / Custom Print', from: 6000, deposit: 700 } } },
       ppf: { label: 'Protective Film', packages: {
         hull: { name: 'Hull & High-wear Film', from: 1500, deposit: 300 } } }
     }
@@ -57,7 +61,7 @@ export default async function handler(req, res) {
 
     let mobile = b.mobile === true || b.place === 'mobile';
     // automotive PPF and color-change wraps are in-shop only
-    if (mobile && b.category === 'auto' && (b.service === 'ppf' || b.service === 'wrap')) mobile = false;
+    if (mobile && b.category === 'auto' && b.service === 'ppf') mobile = false;
     const location = mobile ? (b.location || '').trim() : '';
     if (mobile && !location) return res.status(400).json({ error: 'Location required for mobile service' });
 
