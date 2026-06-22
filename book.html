@@ -42,7 +42,7 @@
       <div class="section-inner">
         <div class="wizard" id="wiz">
           <div class="wiz-progress" id="wiz-progress">
-            <div class="wiz-dot on"></div><div class="wiz-dot"></div><div class="wiz-dot"></div><div class="wiz-dot"></div><div class="wiz-dot"></div><div class="wiz-dot"></div>
+            <div class="wiz-dot on"></div><div class="wiz-dot"></div><div class="wiz-dot"></div><div class="wiz-dot"></div><div class="wiz-dot"></div><div class="wiz-dot"></div><div class="wiz-dot"></div>
           </div>
 
           <!-- STEP 0 — category -->
@@ -118,9 +118,21 @@
               </select>
               <input type="text" id="bk-vehicle" placeholder="Model &amp; year (e.g. 911, 2023)">
             </div>
-            <div class="wiz-nav"><a class="btn btn-primary" id="bk-pay">Book &amp; Pay Deposit</a></div>
+            <div class="wiz-nav"><a class="btn btn-primary" id="to-payment">Continue to payment</a></div>
             <div class="bk-error" id="err-5"></div>
-            <p class="bk-note">Secure checkout via Stripe. We'll reach out to confirm the details.</p>
+          </div>
+
+          <!-- STEP 6 — payment (embedded Stripe Elements, on-page like millionpotato) -->
+          <div class="wiz-step" data-step="6">
+            <div class="wiz-q">Pay your deposit: <span id="bk-deposit2" class="grad">$200</span></div>
+            <div class="wiz-hint">Secure payment — you stay right here on Revlab.</div>
+            <div id="pay-loading" class="bk-note" style="text-align:center;">Loading secure payment…</div>
+            <div id="express-checkout-element" style="max-width:440px; margin:0 auto 6px;"></div>
+            <div id="pay-divider" class="bk-label" style="display:none; text-align:center; margin:14px auto 10px;">or pay by card</div>
+            <div id="payment-element" style="max-width:440px; margin:0 auto;"></div>
+            <div class="wiz-nav"><a class="btn btn-primary" id="bk-confirm" style="display:none;">Pay deposit</a></div>
+            <div class="bk-error" id="err-6"></div>
+            <p class="bk-note">Powered by Stripe · Apple Pay &amp; Google Pay supported.</p>
           </div>
 
           <div class="wiz-nav" id="back-wrap" style="display:none;"><button class="wiz-back" id="wiz-back">← Back</button></div>
@@ -143,6 +155,7 @@
   </footer>
 
   <script src="js/site.js?v=7"></script>
+  <script src="https://js.stripe.com/v3/"></script>
   <script>
   (function () {
     /* ── Catalog (mirrored server-side in /api/checkout.js) ── */
@@ -185,6 +198,7 @@
       dots.forEach(function (d, k) { d.classList.toggle('on', k <= i); });
       backWrap.style.display = i > 0 ? 'flex' : 'none';
       if (i === 5) { configMakeField(); updateDeposit(); }
+      if (i === 6) { updateDeposit(); setupPayment(); }
     }
 
     /* Step 0 — category */
@@ -320,6 +334,7 @@
     function updateDeposit() {
       var p = currentPkg(); if (!p) return;
       document.getElementById('bk-deposit').textContent = '$' + depositTotal();
+      var d2 = document.getElementById('bk-deposit2'); if (d2) d2.textContent = '$' + depositTotal();
       var parts = [
         CATALOG[bk.category].label,
         CATALOG[bk.category].services[bk.service].label,
@@ -332,34 +347,80 @@
 
     document.getElementById('wiz-back').addEventListener('click', function () { show(cur - 1); });
 
-    document.getElementById('bk-pay').addEventListener('click', function () {
+    function buildPayload() {
+      var make = (bk.category === 'auto') ? (document.getElementById('bk-make').value || '') : '';
+      var modelyear = document.getElementById('bk-vehicle').value.trim();
+      return {
+        category: bk.category, service: bk.service, pkg: bk.pkg,
+        place: bk.place, mobile: bk.place === 'mobile', location: bk.location,
+        date: bk.date, time: bk.time,
+        name: document.getElementById('bk-name').value.trim(),
+        email: document.getElementById('bk-email').value.trim(),
+        phone: document.getElementById('bk-phone').value.trim(),
+        vehicle: (make ? make + ' ' : '') + modelyear
+      };
+    }
+
+    /* details → payment step */
+    document.getElementById('to-payment').addEventListener('click', function () {
       var err = document.getElementById('err-5');
       var name = document.getElementById('bk-name').value.trim();
       var email = document.getElementById('bk-email').value.trim();
-      var make = (bk.category === 'auto') ? (document.getElementById('bk-make').value || '') : '';
-      var modelyear = document.getElementById('bk-vehicle').value.trim();
-      var vehicle = (make ? make + ' ' : '') + modelyear;
       if (!name || !email) { err.textContent = 'Name and email, please.'; err.style.display = 'block'; return; }
       err.style.display = 'none';
-      var btn = this; btn.textContent = 'One sec…';
-      fetch('/api/checkout', {
-        method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          category: bk.category, service: bk.service, pkg: bk.pkg,
-          place: bk.place, mobile: bk.place === 'mobile', location: bk.location,
-          date: bk.date, time: bk.time,
-          name: name, email: email, vehicle: vehicle,
-          phone: document.getElementById('bk-phone').value.trim()
-        })
-      }).then(function (r) { return r.json(); }).then(function (d) {
-        if (d && d.url) { window.location.href = d.url; }
-        else { throw new Error((d && d.error) || 'failed'); }
-      }).catch(function () {
-        btn.textContent = 'Book & Pay Deposit';
-        err.textContent = 'Checkout failed — try again, or reach us on the contact form.';
-        err.style.display = 'block';
-      });
+      show(6);
     });
+
+    /* ── Embedded Stripe Elements (on-page payment, like themillionpotato.com) ── */
+    var STRIPE_PK = 'pk_live_51TcGJ4KqVrmdsHCGXrINHck04QMMPiX5u9vwAX4ubr3YruHP06sCkf71Bix4oZtB5yOlWzUL23YsqrwnHXAU1YTP00EaGniPZf';
+    var stripe = null, elements = null, paySetupKey = '';
+    try { if (window.Stripe) stripe = Stripe(STRIPE_PK); } catch (e) {}
+
+    function err6(msg) { var e = document.getElementById('err-6'); e.textContent = msg; e.style.display = 'block'; }
+
+    function setupPayment() {
+      if (!stripe) { err6('Payment is unavailable right now — please reach us on the contact form.'); return; }
+      if (!currentPkg()) return;
+      var key = [bk.category, bk.service, bk.pkg, bk.place, bk.location, document.getElementById('bk-email').value.trim()].join('|');
+      if (key === paySetupKey && elements) return; // already mounted for this exact selection
+      paySetupKey = key;
+      document.getElementById('err-6').style.display = 'none';
+      document.getElementById('pay-loading').style.display = 'block';
+      document.getElementById('express-checkout-element').innerHTML = '';
+      document.getElementById('payment-element').innerHTML = '';
+      document.getElementById('bk-confirm').style.display = 'none';
+      fetch('/api/intent', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(buildPayload()) })
+        .then(function (r) { return r.json(); })
+        .then(function (d) {
+          if (!d.clientSecret) throw new Error(d.error || 'Could not start payment');
+          document.getElementById('pay-loading').style.display = 'none';
+          elements = stripe.elements({ clientSecret: d.clientSecret, appearance: { theme: 'night', variables: { colorPrimary: '#E9ECF1', colorBackground: '#0d0d10', colorText: '#F4F5F7', colorTextSecondary: '#A6ABB4', borderRadius: '12px', fontFamily: 'Inter, system-ui, sans-serif' } } });
+          var ec = elements.create('expressCheckout', { paymentMethods: { applePay: 'always', googlePay: 'always', link: 'never' } });
+          ec.on('confirm', function () { doConfirm(); });
+          ec.mount('#express-checkout-element');
+          var pe = elements.create('payment', { layout: 'tabs' });
+          pe.mount('#payment-element');
+          document.getElementById('pay-divider').style.display = 'block';
+          document.getElementById('bk-confirm').style.display = '';
+        })
+        .catch(function (e) {
+          document.getElementById('pay-loading').style.display = 'none';
+          err6('Could not start payment: ' + (e.message || 'error'));
+        });
+    }
+
+    function doConfirm() {
+      if (!stripe || !elements) return;
+      var btn = document.getElementById('bk-confirm'); btn.textContent = 'Processing…';
+      document.getElementById('err-6').style.display = 'none';
+      stripe.confirmPayment({
+        elements: elements,
+        confirmParams: { return_url: location.origin + '/book.html?booked=1' }
+      }).then(function (res) {
+        if (res && res.error) { btn.textContent = 'Pay deposit'; err6(res.error.message || 'Payment failed — please try again.'); }
+      });
+    }
+    document.getElementById('bk-confirm').addEventListener('click', doConfirm);
 
     /* Success toast after Stripe redirect */
     if (location.search.indexOf('booked=1') !== -1) {
