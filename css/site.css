@@ -357,14 +357,14 @@ img { max-width: 100%; display: block; }
 .wiz-opt h4 { font-size: 1rem; font-weight: 700; }
 .wiz-opt p { color: var(--text-muted); font-size: .82rem; margin-top: 4px; }
 .wiz-fields { display: flex; flex-direction: column; gap: 14px; max-width: 440px; margin: 0 auto; }
-.field input, .field textarea, .wiz-fields input, .wiz-fields textarea, .form input, .form textarea, .form select {
+.field input, .field textarea, .wiz-fields input, .wiz-fields textarea, .wiz-fields select, .form input, .form textarea, .form select {
   width: 100%; box-sizing: border-box; background: rgba(255,255,255,0.03);
   border: 1px solid var(--border); border-radius: 12px; padding: 14px 16px;
   color: var(--text-primary); font-family: var(--font); font-size: .98rem; transition: border-color .3s, background .3s;
 }
 input::placeholder, textarea::placeholder { color: var(--text-muted); }
-.field input:focus, .wiz-fields input:focus, .wiz-fields textarea:focus, .form input:focus, .form textarea:focus, .form select:focus { outline: none; border-color: var(--accent); background: rgba(255,255,255,0.05); }
-.form select option { background: #0A0A0C; }
+.field input:focus, .wiz-fields input:focus, .wiz-fields textarea:focus, .wiz-fields select:focus, .form input:focus, .form textarea:focus, .form select:focus { outline: none; border-color: var(--accent); background: rgba(255,255,255,0.05); }
+.form select option, .wiz-fields select option { background: #0A0A0C; }
 .wiz-nav { display: flex; justify-content: center; margin-top: 26px; }
 .wiz-back { background: none; border: none; color: var(--text-muted); font-family: var(--font); font-size: .9rem; cursor: pointer; padding: 10px; transition: color .25s; }
 .wiz-back:hover { color: var(--text-primary); }
