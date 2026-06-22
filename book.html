@@ -72,7 +72,7 @@
           <!-- STEP 3 — location -->
           <div class="wiz-step" data-step="3">
             <div class="wiz-q">Where should we do the work?</div>
-            <div class="wiz-hint">Mobile service comes to you for an added fee.</div>
+            <div class="wiz-hint" id="loc-hint">Mobile service comes to you for an added fee.</div>
             <div class="wiz-opts" data-key="place">
               <div class="wiz-opt" data-val="shop"><h4>At Revlab</h4><p>Drop off at our shop · no extra fee</p></div>
               <div class="wiz-opt" data-val="mobile"><h4>Mobile — we come to you</h4><p>+$150 travel fee · we come to your location</p></div>
@@ -197,8 +197,30 @@
       steps.forEach(function (s, k) { s.classList.toggle('on', k === i); });
       dots.forEach(function (d, k) { d.classList.toggle('on', k <= i); });
       backWrap.style.display = i > 0 ? 'flex' : 'none';
+      if (i === 3) configLocation();
       if (i === 5) { configMakeField(); updateDeposit(); }
       if (i === 6) { updateDeposit(); setupPayment(); }
+    }
+
+    /* Mobile service is not offered for automotive PPF or color-change wraps (in-shop only). */
+    function mobileAllowed() {
+      return !(bk.category === 'auto' && (bk.service === 'ppf' || bk.service === 'wrap'));
+    }
+    function configLocation() {
+      var mobileOpt = wiz.querySelector('[data-key="place"] .wiz-opt[data-val="mobile"]');
+      var shopOpt = wiz.querySelector('[data-key="place"] .wiz-opt[data-val="shop"]');
+      var hint = document.getElementById('loc-hint');
+      if (mobileAllowed()) {
+        mobileOpt.style.display = '';
+        hint.textContent = 'Mobile service comes to you for an added fee.';
+      } else {
+        mobileOpt.style.display = 'none';
+        mobileOpt.classList.remove('sel');
+        hint.textContent = 'This service is in-shop only — drop off at Revlab.';
+        bk.place = 'shop'; bk.location = '';
+        shopOpt.classList.add('sel');
+        document.getElementById('loc-wrap').style.display = 'none';
+      }
     }
 
     /* Step 0 — category */

@@ -55,8 +55,10 @@ export default async function handler(req, res) {
     if (!email) return res.status(400).json({ error: 'Email required' });
     if (!b.date) return res.status(400).json({ error: 'Pick a date' });
 
-    const mobile = b.mobile === true || b.place === 'mobile';
-    const location = (b.location || '').trim();
+    let mobile = b.mobile === true || b.place === 'mobile';
+    // automotive PPF and color-change wraps are in-shop only
+    if (mobile && b.category === 'auto' && (b.service === 'ppf' || b.service === 'wrap')) mobile = false;
+    const location = mobile ? (b.location || '').trim() : '';
     if (mobile && !location) return res.status(400).json({ error: 'Location required for mobile service' });
 
     const deposit = pkg.deposit + (mobile ? MOBILE_FEE : 0);
